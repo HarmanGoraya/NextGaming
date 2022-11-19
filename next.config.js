@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  publicRuntimeConfig:{
+    REACT_APP_KEY: 'a10b14822f884880bd810391a618adf4'
+  }
 }
 
 module.exports = nextConfig
