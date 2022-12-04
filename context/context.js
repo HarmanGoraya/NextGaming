@@ -45,6 +45,19 @@ export const ContextProvider = ({ children }) => {
     }
 
 
+    const fetchGame = async (id) =>{
+        dispatch({type:FETCH_GAME_BEGIN})
+        const game = await axios.get(`https://api.rawg.io/api/games/${id}?key=${API_KEY}`)
+
+        dispatch({
+            type: FETCH_GAME,
+            payload: game.data
+        })
+    }
+
+
+
+
     //collapse menu
     const collapseMenu = () =>{
         dispatch({
@@ -52,14 +65,47 @@ export const ContextProvider = ({ children }) => {
         })
     }
 
-    console.log(state)
+    //open modal
+    const openModal = (id) =>{
+        dispatch({
+            type: OPEN_MODAL,
+            payload: id
+        })
+    }
+    //close modal
+    const closeModal = () =>{
+        dispatch({
+            type: CLOSE_MODAL
+        })
+    }
+
+
+
+
+    //increase page side
+    const increasePagesize = () =>{
+        dispatch({
+            type:PAGE_SIZE,
+            payload: state.page_size + 4
+        })
+    }
+
+    const fetchClickedGame = async (id) => {
+        console.log(id)
+        fetchGame(id)
+    }
+
 
     useEffect(() =>{
-        fetchGames(baseUrl)
-    },[])
+        fetchGames(`${baseUrl}&page_size=${state.page_size}`)
+    },[state.page_size])
+
+
 
     return (
-        <StatsContext.Provider value={{...state, collapseMenu}}>
+        <StatsContext.Provider value={{...state, collapseMenu, increasePagesize,
+            fetchClickedGame,openModal,
+            closeModal}}>
             {children}
         </StatsContext.Provider>
     )

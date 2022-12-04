@@ -9,7 +9,6 @@ import noimage from '../assets/noimage.jpg'
 function Game({values, click}) {
     const theme = useThemeContext()
 
-    console.log(values)
 
     const {name, background_image} = values;
 
