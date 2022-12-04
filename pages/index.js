@@ -11,7 +11,7 @@ import { down } from '../utilts/Icons';
 
 export default function Home() {
   const theme = useThemeContext();
-  const { homepage_games } = useStatsContext()
+  const { searching, games, homepage_games, increasePagesize, fetchClickedGame, openModal } = useStatsContext()
   console.log("theme:", theme);
   return (
     <div>
@@ -20,15 +20,44 @@ export default function Home() {
         <HomepageStyled>
         <div className="home-items">
           {
-            homepage_games.map((game) =>{
+            !searching && homepage_games.map((game) =>{
               return <Game 
               key={game.id}
-              values={{...game}}
-               
+              values={{...game}} 
+              click={() =>{
+                fetchClickedGame(game.id)
+                openModal(game.id)
+              }}  
               />              
             })        
           }
+          {
+                searching && games.map((game) => {
+                  return <Game
+                    key={game.id}
+                    values={{ ...game }}
+                    click={() => {
+                      fetchClickedGame(game.id)
+                      openModal(game.id)
+                    }}
+                  />
+                })
+              }
         </div>
+        <div className="load-more">
+              <Button 
+                name={'Load More'}
+                blob={'blob'}
+                padding={'.7rem 1.2rem'}
+                borderRad={'10px'}
+                fw={'bold'}
+                fs={'1.2rem'}
+                icon={down}
+                background={theme.colorPrimary}
+                click={increasePagesize}
+              />
+              </div>
+
         </HomepageStyled>
 
         </MainContent>

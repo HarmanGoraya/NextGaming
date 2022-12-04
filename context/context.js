@@ -30,6 +30,8 @@ export const ContextProvider = ({ children }) => {
     }
 
     const [state, dispatch] = useReducer(reducer, initialState)
+    const [searching, setSearching] = useState(false)
+
 
     const fetchGames = async (url) => {
         dispatch({type: BEGIN_DATA_FETCH})
@@ -55,6 +57,45 @@ export const ContextProvider = ({ children }) => {
         })
     }
 
+    const popularGames = async (url) => {
+        dispatch({ type: BEGIN_DATA_FETCH })
+        try {
+            const res = await axios.get(url)
+            dispatch({
+                type: POPULAR_DATA_FETCHED,
+                payload: res.data.results
+            })
+        } catch (error) {
+            console.log(err);
+        }
+    }
+
+    const upcomingGames = async (url) => {
+        dispatch({ type: BEGIN_DATA_FETCH })
+        try {
+            const res = await axios.get(url)
+            dispatch({
+                type: UPCOMING_GAMES,
+                payload: res.data.results
+            })
+        } catch (error) {
+            console.log(err);
+        }
+    }
+
+    const searchGames = async (search) => {
+        dispatch({ type: BEGIN_DATA_FETCH })
+        try {
+            const res = await axios.get(`${baseUrl}&search=${search}&page_size=${state.page_size}`)
+            dispatch({
+                type: SEARCH_DATA_FETCHED,
+                payload: res.data.results
+            })
+            setSearching(true)
+        } catch (error) {
+            console.log(err);
+        }
+    }
 
 
 
@@ -79,9 +120,6 @@ export const ContextProvider = ({ children }) => {
         })
     }
 
-
-
-
     //increase page side
     const increasePagesize = () =>{
         dispatch({
@@ -91,21 +129,29 @@ export const ContextProvider = ({ children }) => {
     }
 
     const fetchClickedGame = async (id) => {
-        console.log(id)
         fetchGame(id)
     }
 
 
     useEffect(() =>{
+        popularGames(`${baseUrl}&page_size=${state.page_size}&dates=2017-09-01,2021-12-10`)
         fetchGames(`${baseUrl}&page_size=${state.page_size}`)
+        upcomingGames(`${baseUrl}&dates=2022-09-01,2023-12-10&ordering=-added&page_size=${state.page_size}`)
+        
     },[state.page_size])
 
+    
 
 
     return (
         <StatsContext.Provider value={{...state, collapseMenu, increasePagesize,
             fetchClickedGame,openModal,
-            closeModal}}>
+            closeModal,searching,
+            setSearching,
+            searchGames,
+            popularGames,
+            upcomingGames,
+            fetchGames}}>
             {children}
         </StatsContext.Provider>
     )

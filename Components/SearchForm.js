@@ -1,15 +1,46 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import search from '../utilts/Icons'
+import { useStatsContext } from '../context/context'
 import { useThemeContext } from '../context/themeContext'
+import { search } from '../utilts/Icons'
+import { API_KEY } from '../config';
+
 
 function SearchForm() {
     const theme = useThemeContext()
+    const {setSearching, searchGames, popularGames, fetchGames,page_size, upcomingGames } = useStatsContext()
+
+    const [searchValue, setSearchValue] = useState('')
+
+    const handleChange = (e) =>{
+        setSearchValue(e.target.value)
+    }
+
+    //handle submit
+    const handleSubmit = (e) =>{
+        e.preventDefault()
+        if(searchValue){
+            searchGames(searchValue)
+        }
+    }
+
+    useEffect(() =>{
+        if(searchValue === ''){
+            setSearching(false)
+            popularGames(`https://api.rawg.io/api/games?key=${API_KEY}&dates=2019-09-01,2022-09-30`)
+            fetchGames(`https://api.rawg.io/api/games?key=${API_KEY}&page_size=${page_size}`)
+            upcomingGames(`https://api.rawg.io/api/games?key=${API_KEY}&dates=2022-09-01,2026-12-31&ordering=-added&page_size=${page_size}`)
+        }
+    }, [searchValue])
+
     return (
        <SearchFormStyled theme={theme}>
             <div className="input-control">
-                <input type="text" placeholder='Search Here...' />  
-                <button type='submit'>
+                <input type="text" placeholder='Search Here...' 
+                onChange={handleChange}
+                value={searchValue}
+                />  
+                <button type='submit' className='search' onClick={handleSubmit}>
                     {search}
                 </button>
 
